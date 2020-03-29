@@ -1,0 +1,66 @@
+[
+    {"tournament_name" : null}, //Used for display
+    {"password": null}, //Password used for admins
+    {"team_num": null}, //Number of teams, used for automatic match number calculation and GUI
+    {"player_count": null}, //Number of Players in teams
+    {"match_num": null}, //Number of matches, used in GUI
+    {"game_num": null}, //Number of games, used for number randomization and ease of use
+
+    {"teams": [
+        [
+            {"name": null}, //Name of team, used for display
+            [
+                "player_1",
+                "player_2",
+                "player_n"  
+            ], //Player names, used for display and auto-matching
+            [
+                "player_1_total_score",
+                "player_2_total_score",
+                "player_n_total_score"
+            ] //Player total scores, used for calculations
+        ],
+
+        [
+            {"name": null},
+            [
+                "player_1",
+                "player_2",
+                "player_n"
+            ],
+            [
+                "player_1_total_score",
+                "player_2_total_score",
+                "player_n_total_score"
+            ]
+        ]
+    ]},
+
+    {"matches": [
+        [
+            {"team_1_name": null}, //Team 1 Name, used for display and autocomplete
+            {"team_2_name": null}, //Team 2 Name, used for display and autocomplete
+
+            {"games": [
+                [
+                    {"doubles": true},
+                    {"team_1": [
+                        ["player_1_name", "player_1_score"], //Player name and score, used for
+                        ["player_2_name", "player_2_score"]
+                    ]},
+
+                    {"team_2": [
+                        ["player_1_name", "player_1_score"],
+                        ["player_2_name", "player_2_score"]
+                    ]}
+                ],
+
+                [
+                    {"doubles": false},
+                    {"team_1": ["player_1_name", "player_1_score"]},
+                    {"team_2": ["player_1_name", "player_1_score"]}
+                ]
+            ]}
+        ]
+    ]}
+]
