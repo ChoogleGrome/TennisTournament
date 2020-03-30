@@ -168,20 +168,16 @@ function game_setup () {
     for (var y = 0; y < data[4].match_num; y = y + 1) {
         name_num = y + 1
         name = "Match " + name_num
-        button(name, "game_show("+ y +")" , null ,document.getElementById("left_game"), true)
+        button(name, "game_dropdown_show("+ y +")" , null ,document.getElementById("left_game"), true)
     }
 
-    game_dropdown_show()
+    game_dropdown_show(0)
 
     return
 }
 
-function game_dropdown_show () {
-    var removalArr = document.getElementsByClassName("removal")
-
-    for (var r = 0; r < removalArr.length; r = r + 1) {
-        removalArr[r].parentNode.removeChild(removalArr[r])
-    }
+function game_dropdown_show (match) {
+    $(".removal").remove()
 
     var nameArr = [[], []]
 
@@ -195,9 +191,9 @@ function game_dropdown_show () {
 
     console.log(nameArr)
     dropdown("game_select", nameArr[0], nameArr[1], null, null, document.getElementById("right_game"))
-    button("Next", "game_show_players(document.getElementById('game_select').value, false)", null, document.getElementById("right_game"), true)
+    button("Next", "game_show_players(null, false, "+ match +", document.getElementById('game_select').value)", null, document.getElementById("right_game"), true)
 
-    game_show_team()
+    game_show_team(0)
 
     var left = document.getElementById("left_game").clientHeight
     var right = document.getElementById("right_game").clientHeight
@@ -213,7 +209,7 @@ function game_dropdown_show () {
     return
 }
 
-function game_show_team () {
+function game_show_team (match) {
     $(".removal").remove()
 
     var valueArr = []
@@ -233,21 +229,15 @@ function game_show_team () {
         dropdown("team_" + x + "_select", valueArr, nameArr, {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
     }
 
-    button("Next", "game_show_players([document.getElementById('team_0_select').value, document.getElementById('team_1_select').value], false)", {"id": "team_button", "class": "removal"}, document.getElementById("right_game"), true )
+    button("Next", "game_show_players([document.getElementById('team_0_select').value, document.getElementById('team_1_select').value], false, "+ match +", document.getElementById('game_select').value)", {"id": "team_button", "class": "removal"}, document.getElementById("right_game"), true )
 
     return
 }
 
-function game_show_players (team_num, doubles) {
+function game_show_players (team_num, doubles, match, game_num) {
     console.log(team_num)
 
-    // var removalArr = document.getElementsByClassName("removal")
-
-    // for (var r = 0; r < removalArr.length; r = r + 1) {
-    //     removalArr[r].parentNode.removeChild(removalArr[r])
-    // }
-
-    $(".removal").remove()
+    console.log(match)
 
     if (team_num == "team_select") {
         game_show_team()
@@ -259,6 +249,29 @@ function game_show_players (team_num, doubles) {
             team_num[i] = parseInt(team_num[i].replace(/\D/g, "")) // Finds pattern (first /) of \D (all non-numerical values), with a global (g) modeifier (second /), replaces with nothing ("")        
         }
     }
+
+    if (data[7] == undefined) {
+        data[7] = {"matches":[]}
+    }
+
+    if (data[7].matches[match] == undefined) {
+        data[7].matches[match] = []
+    }
+
+    if (data[7].matches[match][0] == undefined || data[7].matches[match][1] == undefined) {
+        data[7].matches[match][0] = {"team_1_name": data[6].teams[team_num[0]][0].name}
+        data[7].matches[match][1] = {"team_2_name": data[6].teams[team_num[1]][0].name}
+    }
+
+    console.log(data)
+
+    // var removalArr = document.getElementsByClassName("removal")
+
+    // for (var r = 0; r < removalArr.length; r = r + 1) {
+    //     removalArr[r].parentNode.removeChild(removalArr[r])
+    // }
+
+    $(".removal").remove()
     
     var checkbox = document.createElement("input")
     text("Doubles?", {"id": "doubles_check_text", "class": "removal"}, document.getElementById("right_game"), true)
@@ -266,6 +279,7 @@ function game_show_players (team_num, doubles) {
     document.getElementById("right_game").appendChild(checkbox)
 
     var team_index = [[], []]
+    var scoreArr = [1, 2, 3, 4, 5, 6]
 
     if (team_num != "team_select") {
         for (var e = 0; e < 2; e = e + 1) {
@@ -278,7 +292,9 @@ function game_show_players (team_num, doubles) {
         if (!doubles) {
             for (var y = 0; y < 2; y = y + 1) {
                 text("Player 1 of Team " + (y + 1) + ": ", {"id": "player_1_team_" + y + "_text", "class": "removal"}, document.getElementById("right_game"), true)
-                dropdown("player_1_team_" + q + "_dropdown", team_index[1], team_index[0], {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
+                dropdown("player_1_team_" + y + "_dropdown", team_index[1], team_index[0], {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
+                text("Player 1 of Team " + (y + 1) + " Score: ", {"class": "removal"}, document.getElementById("right_game"), true)
+                dropdown("player_1_team_" + y + "_score_dropdown", scoreArr, scoreArr, {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
             }
         }   
         
@@ -289,13 +305,60 @@ function game_show_players (team_num, doubles) {
                 dropdown("player_" + q + "_team_0_dropdown", team_index[1], team_index[0], {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
             }
 
+            text("Team 1 Score: ", {"class": "removal"}, document.getElementById("right_game"), true)
+            dropdown("team_0_score_dropdown", scoreArr, scoreArr, {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
+
             for (var p = 0; p < 2; p = p + 1) {
                 text("Player " + (p + 1) + " of Team 2: ", {"id": "player_" + p + "_team_1_text","class": "removal"}, document.getElementById("right_game"), true)
                 dropdown("player_" + p + "_team_1_dropdown", team_index[1], team_index[0], {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
             }
+
+            text("Team 2 Score: ", {"class": "removal"}, document.getElementById("right_game"), true)
+            dropdown("team_1_score_dropdown", scoreArr, scoreArr, {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
         }
+
+        button("Submit Game", "game_submit("+match+"," + game_num + ", "+ doubles +")", {"class": "removal"}, document.getElementById("right_game"), true)
     }
 
+    return
+}
+
+function game_submit (match, game, doubles) {
+    if (data[7].matches[match][3] == undefined) {
+        data[7].matches[match][3] = {"games": []}
+    }
+
+    data[7].matches[match][3].games[game][0] = {"doubles": doubles}
+
+    if (doubles == true) {
+        data[7].matches[match][3].games[game][1] = {"team_1": [
+            [document.getElementById("player_0_team_0_dropdown").value, document.getElementById("player_1_team_0_dropdown").value],
+            document.getElementById("team_0_score_dropdown").value,
+        ]}
+
+        data[7].matches[match][3].games[game][2] = {"team_2": [
+            [document.getElementById("player_0_team_1_dropdown").value, document.getElementById("player_1_team_1_dropdown").value],
+            document.getElementById("team_1_score_dropdown").value,
+        ]}
+    }
+
+    else if (doubles == false) {
+        data[7].matches[match][3].games[game][1] = {"team_1": [
+            document.getElementById("player_1_team_0_dropdown").value, 
+            document.getElementById("player_1_team_0_score_dropdown").value
+        ]}
+
+        data[7].matches[match][3].games[game][2] = {"team_2": [
+            [document.getElementById("player_1_team_1_dropdown").value, document.getElementById("player_1_team_1_score_dropdown").value],
+        ]}
+    }
+
+    else {
+        throw new Error("Doubles Error")
+    }
+
+    console.log(data)
+    
     return
 }
 
