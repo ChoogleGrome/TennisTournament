@@ -45,13 +45,13 @@
                 [
                     {"doubles": true},
                     {"team_1": [
-                        ["player_1_name", "player_1_score"], //Player name and score, used for
-                        ["player_2_name", "player_2_score"]
+                        ["player_1_name", "player_2_name"], //Player name and score, used for
+                        "team_1_score"
                     ]},
 
                     {"team_2": [
-                        ["player_1_name", "player_1_score"],
-                        ["player_2_name", "player_2_score"]
+                        ["player_1_name", "player_2_name"], //Player name and score, used for
+                        "team_1_score"
                     ]}
                 ],
 

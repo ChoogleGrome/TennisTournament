@@ -14,6 +14,7 @@ function main() {
         alert("Sucess") //Indicates Success
     }
 }
+
 function check(username, password, logon_time) {
     var date = new Date // Initialises date class
     date = date.getTime // gets time (ms)

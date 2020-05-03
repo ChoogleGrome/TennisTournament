@@ -1,22 +1,25 @@
 var data = []
+// document.body.style.border = null
 
 function main() {
     text_box("Tournament Name: ", null, {"id": "tournament_name"}) // Creates Textbox to input tournament name
-    text_box("Password: ", null, {"type": "password", "id": "password"}) // Creates Textbox to input password
+    // text_box("Password: ", null, {"type": "password", "id": "password"}) // Creates Textbox to input password
     text_box("Number of Teams :", null, {"id": "team_num"}) // Creates textbox to input number of teams 
     text_box("Number of Players in Teams :", null, {"id": "player_num"}) // Creates textbox to input number of teams 
     text_box("Number of Matches: ", null, {"id": "match_num"}) // Creates textbox to input number of matches
     text_box("Number of Games per Match: ", null, {"id": "game_num"}) // Creates textbox to input number of games per match
-    button("Next", "team_setup()", {"id": "submit"}) // Submit button, calls next module
+    button("Next", "team_setup()", {"id": "submit", "class": "button_removal"}) // Submit button, calls next module
     return
 }
 
 function team_setup() {
     // console.log("called") // Check
 
+    $(".button_removal").remove()
+
     data = [
         {"tournament_name": document.getElementById("tournament_name").value},
-        {"password": document.getElementById("password").value},    
+        {"password": null},    
         {"team_num": parseInt(document.getElementById("team_num").value)},
         {"player_num": parseInt(document.getElementById("player_num").value)},
         {"match_num": parseInt(document.getElementById("match_num").value)},
@@ -61,7 +64,7 @@ function team_setup() {
 
     var name = ""
 
-    document.body.appendChild(document.createElement("br"))
+    // document.body.appendChild(document.createElement("br"))
 
     for (var x = 0; x < 2; x = x + 1) {
         switch (x) {
@@ -81,9 +84,11 @@ function team_setup() {
         button(name, "team_show("+ y +")" , null ,document.getElementById("left_team"), true)
     }
 
+    button("Next", "match_show()", {"class": "button_removal"}, null, false)
+
     team_show(0)
 
-    game_setup()
+    // game_setup()
 
     return
 }
@@ -141,228 +146,302 @@ function team_input (player_num, team_num) {
     data[6].teams[team_num][2][player_num] = 0 // Inits player_total_score
     console.log(data)
 
-    game_show_team()
+    // game_show_team(0)
 
+    
     return
 }
 
-function game_setup () {
-    dv({"id": "game_div", "class": "container"})
+function match_show() {
+    $(".error_2").remove()
 
-    var name = ""
-
-    document.body.appendChild(document.createElement("br"))
-
-    for (var x = 0; x < 2; x = x + 1) {
-        switch (x) {
-            case 0: name = "left_game"; break;
-            case 1: name = "right_game"; break;
-        }
-
-        dv({"class": "left-float", "id": name}, document.getElementById("game_div"), true)
-    }
-
-    name = ""
-    var name_num = 0
-
-    for (var y = 0; y < data[4].match_num; y = y + 1) {
-        name_num = y + 1
-        name = "Match " + name_num
-        button(name, "game_dropdown_show("+ y +")" , null ,document.getElementById("left_game"), true)
-    }
-
-    game_dropdown_show(0)
-
-    return
-}
-
-function game_dropdown_show (match) {
-    $(".removal").remove()
-
-    var nameArr = [[], []]
-
-    nameArr[0][0] = "team_select"
-    nameArr[1][0] = "Team Select"
-
-    for (var x = 0; x < data[5].game_num; x = x + 1) {
-        nameArr[0][x + 1] = "game_" + x
-        nameArr[1][x + 1] = "Game " + (x + 1)
-    }
-
-    console.log(nameArr)
-    dropdown("game_select", nameArr[0], nameArr[1], null, null, document.getElementById("right_game"))
-    button("Next", "game_show_players(null, false, "+ match +", document.getElementById('game_select').value)", null, document.getElementById("right_game"), true)
-
-    game_show_team(0)
-
-    var left = document.getElementById("left_game").clientHeight
-    var right = document.getElementById("right_game").clientHeight
-
-    if (left > right) {
-        document.getElementById("right_game").setAttribute("style", "height: " + left + "px")
+    if (data[6].teams.length != data[2].team_num) {
+        text("Please fill in all team names and players before continuing", {"class": "error_2"}, null, true)
+        return
     }
 
     else {
-        document.getElementById("left_game").setAttribute("style", "height: " + right + "px")
-    }
-
-    return
-}
-
-function game_show_team (match) {
-    $(".removal").remove()
-
-    var valueArr = []
-    var nameArr = []
-
-    for (var i = 0; i < data[6].teams.length; i = i + 1) {
-        nameArr[i] = data[6].teams[i][0].name
-        valueArr[i] = "team_" + i
-    }
-    
-    console.log(valueArr)
-    console.log(nameArr)
-
-    for (var x = 0; x < 2; x = x + 1) {
-        text("Team " + (x + 1) + ": ", {"id": "team_" + x + "_game", "class": "removal"}, document.getElementById("right_game"), true)
-
-        dropdown("team_" + x + "_select", valueArr, nameArr, {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
-    }
-
-    button("Next", "game_show_players([document.getElementById('team_0_select').value, document.getElementById('team_1_select').value], false, "+ match +", document.getElementById('game_select').value)", {"id": "team_button", "class": "removal"}, document.getElementById("right_game"), true )
-
-    return
-}
-
-function game_show_players (team_num, doubles, match, game_num) {
-    console.log(team_num)
-
-    console.log(match)
-
-    if (team_num == "team_select") {
-        game_show_team()
-        return
-    }
-    
-    for (var i = 0; i < team_num.length; i = i + 1) {
-        if (typeof team_num[i] == "string") {
-            team_num[i] = parseInt(team_num[i].replace(/\D/g, "")) // Finds pattern (first /) of \D (all non-numerical values), with a global (g) modeifier (second /), replaces with nothing ("")        
+        for (var x = 0; x < data[6].teams.length; x = x + 1) {
+            if (data[6].teams[x][1].length != data[3].player_num) {
+                text("Please fill in all team names and players before continuing", {"class": "error_2"}, null, true)
+                return
+            }
         }
     }
 
-    if (data[7] == undefined) {
-        data[7] = {"matches":[]}
+    $(".button_removal").remove()
+
+    for (var y = 0; y < data[4].match_num; y = y + 1) {
+        text("Match " + (y + 1), null, null, false)
+        dv({"id": "match_div_" + y, "class": "container"})
+        for (var z = 0; z < 2; z = z + 1) {
+            switch (z) {
+                case 0: dv({"class": "left-float", "id": "left_match_" + y}, document.getElementById("match_div_" + y), true); break;
+                case 1: dv({"class": "right-float", "id": "right_match_" + y}, document.getElementById("match_div_" + y), true); break;
+            }
+    
+            // dv({"class": "left-float", "id": name}, document.getElementById("match_div_" + y), true)
+        }
+
+        // button("Team Select", "team_select(" + y + ")", null, document.getElementById("left_match_" + y), false)
+
+        for (var z = 0; z < data[5].game_num; z = z + 1) {
+            button("Game " + (z + 1), "doubles_select(" + y + "," + z + ")", null, document.getElementById("left_match_" + y), true)
+        }
+
+        match_team_select(y)
     }
 
-    if (data[7].matches[match] == undefined) {
-        data[7].matches[match] = []
+    return
+}
+
+function match_team_select(match_num) {
+    var val_arr = []
+    var opt_arr = []
+
+    for (var y = 0; y < data[2].team_num; y = y + 1) {
+        opt_arr[y] = data[6].teams[y][0].name
+        val_arr[y] = y
     }
 
-    if (data[7].matches[match][0] == undefined || data[7].matches[match][1] == undefined) {
-        data[7].matches[match][0] = {"team_1_name": data[6].teams[team_num[0]][0].name}
-        data[7].matches[match][1] = {"team_2_name": data[6].teams[team_num[1]][0].name}
+    for (var x = 0; x < 2; x = x + 1) {
+        // text_box("Team " + (x + 1), {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num, "onchange": "match_team_input(" + match_num + ", " + x + ")"}, document.getElementById("right_match_" + match_num), false)
+        text("Team " + (x + 1), {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("match_" + match_num + "_team_" + x, val_arr, opt_arr, {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+    }
+
+    button("Next", "match_team_input(" + match_num + ")", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+
+    // var left = document.getElementById("left_match_" + match_num).clientHeight
+    // var right = document.getElementById("right_match_" + match_num).clientHeight
+
+    // if (left > right) {
+    //     document.getElementById("left_match_" + match_num).setAttribute("style", "height: " + left + "px")
+    // }
+
+    // else {
+    //     document.getElementById("right_match" + match_num).setAttribute("style", "height: " + right + "px")
+    // }
+
+    document.getElementById("right_match_" + match_num).setAttribute("style", "height: " + document.getElementById("left_match_" + match_num + "px"))
+
+    return
+}
+
+function match_team_input(match_num) {
+    if (data[7] == null) {
+        data[7] = {"matches": []}
+    }
+
+    if (data[7].matches[match_num] == null) {
+        data[7].matches[match_num] = [
+            {"team_1": parseInt(document.getElementById("match_" + match_num + "_team_0").value)},
+            {"team_2": parseInt(document.getElementById("match_" + match_num + "_team_1").value)},
+            {"games": []}
+        ]
     }
 
     console.log(data)
 
-    // var removalArr = document.getElementsByClassName("removal")
+    doubles_select(match_num, 0)
 
-    // for (var r = 0; r < removalArr.length; r = r + 1) {
-    //     removalArr[r].parentNode.removeChild(removalArr[r])
-    // }
+    return
+} 
 
-    $(".removal").remove()
-    
-    var checkbox = document.createElement("input")
-    text("Doubles?", {"id": "doubles_check_text", "class": "removal"}, document.getElementById("right_game"), true)
-    setAttribute(checkbox, {"type": "checkbox", "onclick": "game_show_players([" + team_num + "] , true)", "id": "doubles_check", "class": "removal"})
-    document.getElementById("right_game").appendChild(checkbox)
-
-    var team_index = [[], []]
-    var scoreArr = [1, 2, 3, 4, 5, 6]
-
-    if (team_num != "team_select") {
-        for (var e = 0; e < 2; e = e + 1) {
-            for (var r = 0; r < data[6].teams[team_num[e]][1].length; r = r + 1) {
-                team_index[0][r] = data[6].teams[team_num[e]][1][r]
-                team_index[1][r] = "player_" + r + "_team_" + e
-            }
-        }
-
-        if (!doubles) {
-            for (var y = 0; y < 2; y = y + 1) {
-                text("Player 1 of Team " + (y + 1) + ": ", {"id": "player_1_team_" + y + "_text", "class": "removal"}, document.getElementById("right_game"), true)
-                dropdown("player_1_team_" + y + "_dropdown", team_index[1], team_index[0], {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
-                text("Player 1 of Team " + (y + 1) + " Score: ", {"class": "removal"}, document.getElementById("right_game"), true)
-                dropdown("player_1_team_" + y + "_score_dropdown", scoreArr, scoreArr, {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
-            }
-        }   
-        
-        else {
-            $("#doubles_check").prop("checked", true)
-            for (var q = 0; q < 2; q = q + 1) {
-                text("Player " + (q + 1) + " of Team 1: ", {"id": "player_" + q + "_team_0_text","class": "removal"}, document.getElementById("right_game"), true)
-                dropdown("player_" + q + "_team_0_dropdown", team_index[1], team_index[0], {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
-            }
-
-            text("Team 1 Score: ", {"class": "removal"}, document.getElementById("right_game"), true)
-            dropdown("team_0_score_dropdown", scoreArr, scoreArr, {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
-
-            for (var p = 0; p < 2; p = p + 1) {
-                text("Player " + (p + 1) + " of Team 2: ", {"id": "player_" + p + "_team_1_text","class": "removal"}, document.getElementById("right_game"), true)
-                dropdown("player_" + p + "_team_1_dropdown", team_index[1], team_index[0], {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
-            }
-
-            text("Team 2 Score: ", {"class": "removal"}, document.getElementById("right_game"), true)
-            dropdown("team_1_score_dropdown", scoreArr, scoreArr, {"class": "removal"}, {"class": "removal"}, document.getElementById("right_game"))
-        }
-
-        button("Submit Game", "game_submit("+match+"," + game_num + ", "+ doubles +")", {"class": "removal"}, document.getElementById("right_game"), true)
+class Game {
+    constructor(team_1, team_2) {
+        this.team_1 = team_1
+        this.team_2 = team_2
     }
+}
+
+class Singles extends Game {
+    constructor(team_1, team_2, doubles, player_1_team_1, player_1_team_2) {
+        super(team_1)
+        super(team_2)
+        this.doubles = doubles
+        this.player_1_team_1 = player_1_team_1
+        this.player_1_team_2 = player_1_team_2
+    }
+}
+
+class Doubles extends Game {
+    constructor(team_1, team_2, doubles, player_1_team_1, player_2_team_1, player_1_team_2, player_2_team_2) {
+        super(team_1)
+        super(team_2)
+        this.doubles = doubles
+        this.player_1_team_1 = player_1_team_1
+        this.player_2_team_1 = player_2_team_1
+        this.player_1_team_2 = player_1_team_2
+        this.player_2_team_2 = player_2_team_2
+    }
+}
+
+function doubles_select (match_num, game_num) {
+    if (data[7].matches[match_num] == null) {
+        throw new Error("NO TEAM")
+    }
+
+    $(".team_remove_match_" + match_num).remove()
+
+    text("Game " + (game_num + 1), {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+    text("Doubles: ", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+
+    var doubles_checkbox = document.createElement("input")
+    setAttribute(doubles_checkbox, {"id": "doubles_check_match_" + match_num + "_game_" + game_num, "type": "checkbox", "class": "team_remove_match_" + match_num})
+    document.getElementById("right_match_" + match_num).appendChild(doubles_checkbox)
+
+    button("Next", "game_select(" + match_num + ", "  + game_num + ", $('#doubles_check_match_" + match_num + "_game_" + game_num +"').is(':checked'))", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
 
     return
 }
 
-function game_submit (match, game, doubles) {
-    if (data[7].matches[match][3] == undefined) {
-        data[7].matches[match][3] = {"games": []}
+function game_select(match_num, game_num, doubles) {
+    $(".team_remove_match_" + match_num).remove()
+
+    var score_arr = [0, 1, 2, 3, 4, 5, 6]
+    var team_opt_arr = [[], []]
+    var team_val_arr = [[], []]
+    var team
+
+    for (var x = 0; x < 2; x = x + 1) {
+        switch(x) {
+            case 0: team = data[7].matches[match_num][0].team_1; break;
+            case 1: team = data[7].matches[match_num][1].team_2; break;
+            default: throw new Error("team switch error");
+        }
+
+        console.log(team)
+
+        for (var y = 0; y < data[6].teams[team][1].length; y = y + 1) {
+            switch(x) {
+                case 0: team_opt_arr[0][y] = data[6].teams[team][1][y]; team_val_arr[0][y] = y; break; 
+                case 1: team_opt_arr[1][y] = data[6].teams[team][1][y]; team_val_arr[1][y] = y; break;
+            }
+        }
     }
 
-    data[7].matches[match][3].games[game][0] = {"doubles": doubles}
+    console.log(team_opt_arr)
+    console.log(team_val_arr)
 
+    data[7].matches[match_num][2].games[game_num] = []
+    data[7].matches[match_num][2].games[game_num][0] = {"doubles": doubles}
+
+    console.log(data)
+
+    text("Game " + (game_num + 1), {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+    
     if (doubles == true) {
-        data[7].matches[match][3].games[game][1] = {"team_1": [
-            [document.getElementById("player_0_team_0_dropdown").value, document.getElementById("player_1_team_0_dropdown").value],
-            document.getElementById("team_0_score_dropdown").value,
-        ]}
+        text("Player 1 of Team 1", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("player_1_team_1_match_" + match_num + "_game_" + game_num, team_val_arr[0], team_opt_arr[0], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
 
-        data[7].matches[match][3].games[game][2] = {"team_2": [
-            [document.getElementById("player_0_team_1_dropdown").value, document.getElementById("player_1_team_1_dropdown").value],
-            document.getElementById("team_1_score_dropdown").value,
-        ]}
+        text("Player 2 of Team 1", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("player_2_team_1_match_" + match_num + "_game_" + game_num, team_val_arr[0], team_opt_arr[0], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+        
+        text("Score of Team 1", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("score_team_1_match_" + match_num + "_game_" + game_num, score_arr, score_arr, {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+        
+        text("Player 1 of Team 2", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("player_1_team_2_match_" + match_num + "_game_" + game_num, team_val_arr[0], team_opt_arr[0], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+
+        text("Player 2 of Team 2", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("player_2_team_2_match_" + match_num + "_game_" + game_num, team_val_arr[0], team_opt_arr[0], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+        
+        text("Score of Team 2", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("score_team_2_match_" + match_num + "_game_" + game_num, score_arr, score_arr, {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
     }
 
     else if (doubles == false) {
-        data[7].matches[match][3].games[game][1] = {"team_1": [
-            document.getElementById("player_1_team_0_dropdown").value, 
-            document.getElementById("player_1_team_0_score_dropdown").value
-        ]}
-
-        data[7].matches[match][3].games[game][2] = {"team_2": [
-            [document.getElementById("player_1_team_1_dropdown").value, document.getElementById("player_1_team_1_score_dropdown").value],
-        ]}
+        text("Player 1 of Team 1", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("player_1_team_1_match_" + match_num + "_game_" + game_num, team_val_arr[0], team_opt_arr[0], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+        
+        text("Score of Player 1 of Team 1", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("score_team_1_match_" + match_num + "_game_" + game_num, score_arr, score_arr, {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+        
+        text("Player 1 of Team 2", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("player_1_team_2_match_" + match_num + "_game_" + game_num, team_val_arr[1], team_opt_arr[1], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+    
+        text("Score of Player 1 of Team 2", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+        dropdown("score_team_2_match_" + match_num + "_game_" + game_num, score_arr, score_arr, {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
     }
 
     else {
-        throw new Error("Doubles Error")
+        throw new Error("Game Show Error")
+    }
+
+    button("Next", "game_submit(" + match_num + ", " + game_num + "," + doubles + ")", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
+
+    return
+}
+
+function game_submit(match_num, game_num, doubles) {
+    data[7].matches[match_num][2].games[1] = {"team_1": [[], parseInt(document.getElementById("score_team_1_match_" + match_num + "_game_" + game_num).value)]}
+    data[7].matches[match_num][2].games[2] = {"team_2": [[], parseInt(document.getElementById("score_team_2_match_" + match_num + "_game_" + game_num).value)]}
+
+    if (doubles == true) {
+        data[7].matches[match_num][2].games[1].team_1[0][0] = parseInt(document.getElementById("player_1_team_1_match_" + match_num + "_game_" + game_num).value)
+        data[7].matches[match_num][2].games[1].team_1[0][1] = parseInt(document.getElementById("player_2_team_1_match_" + match_num + "_game_" + game_num).value)
+        
+        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][0]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][0]] + parseInt(data[7].matches[match_num][2].games[1].team_1[1])
+        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][1]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][1]] + parseInt(data[7].matches[match_num][2].games[1].team_1[1])
+
+        data[7].matches[match_num][2].games[2].team_2[0][0] = parseInt(document.getElementById("player_1_team_2_match_" + match_num + "_game_" + game_num).value)
+        data[7].matches[match_num][2].games[2].team_2[0][1] = parseInt(document.getElementById("player_2_team_2_match_" + match_num + "_game_" + game_num).value)
+
+        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][0]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][0]] + parseInt(data[7].matches[match_num][2].games[2].team_2[1])
+        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][1]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][1]] + parseInt(data[7].matches[match_num][2].games[2].team_2[1])
+    }
+
+    else if (doubles == false) {
+        data[7].matches[match_num][2].games[1].team_1[0][0] = parseInt(document.getElementById("player_1_team_1_match_" + match_num + "_game_" + game_num).value)
+
+        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][0]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][0]] + parseInt(data[7].matches[match_num][2].games[1].team_1[1])
+
+        data[7].matches[match_num][2].games[2].team_2[0][0] = parseInt(document.getElementById("player_1_team_2_match_" + match_num + "_game_" + game_num).value)
+
+        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][0]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][0]] + parseInt(data[7].matches[match_num][2].games[2].team_2[1])
+    }
+
+    else {
+        throw new Error("Doubles Submit Error")
     }
 
     console.log(data)
+
+    if (document.getElementById("final") == null) {
+        button("Finish (MAKE SURE ALL DATA ENTERED)", "final()", {"id": "final"}, null, false)
+    }
+
+    if (game_num < (data[5].game_num - 1)) {
+        doubles_select(match_num, (game_num + 1))
+    }
     
     return
 }
 
-function dv (attributes, append) {
+function final() {  
+    var req = new XMLHttpRequest() 
+
+    req.onreadystatechange = function() {
+        if (req.readyState == XMLHttpRequest.DONE) {
+            console.log(req.responseText)
+
+            var response = req.responseText
+            response = JSON.parse(response)
+
+            text("Successfully Posted, Acced ID: " + response.id, null, null, true)
+            localStorage.setItem("last_id", response.id)
+        }
+    }
+
+    req.open("POST", "https://api.jsonbin.io/b", true)
+    req.setRequestHeader("Content-Type", "application/json")
+    req.setRequestHeader("secret-key", "$2b$10$ZXvywFevtgaPMWHxYpcYCeFJxyfmyscDslndTeQLaOzcYodKXoTpC")
+    req.send(JSON.stringify(data))
+    return
+}
+
+function dv(attributes, append) {
     var div = document.createElement("div")
 
     if (obj_check(attributes) != true) {
