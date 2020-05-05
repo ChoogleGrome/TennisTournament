@@ -152,3 +152,11 @@ div.right-float {
 
     float: right;
 }
+.bold-underline {
+    font-weight: 1000;
+    text-decoration: underline;
+}
+
+.underline {
+    text-decoration: underline;
+}

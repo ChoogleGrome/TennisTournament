@@ -49,18 +49,43 @@ function leaderboard(data) {
         return b[1] - a[1]
     })
 
-    text("LEADERBOARD", {"text-decoration": "underline", "font-weight": "bold"}, null, false)
+    text("LEADERBOARD", {"class": "bold-underline"}, null, false)
     
     for (var z = 0; z < team_totals.length; z = z + 1) {
-        text("Position " + (z + 1) + "| Team: " + team_totals[z][0] + " | Total Games: " + team_totals[z][1], null, null, false)
+        text("Position " + (z + 1) + " | Team: " + team_totals[z][0] + " | Total Games: " + team_totals[z][1], null, null, false)
     }
 
-    text("PLAYER STATS", {"text-decoration": "underline", "font-weight": "bold"}, null, false)
+    text("PLAYER STATS", {"class": "bold-underline"}, null, false)
 
     for (var a = 0; a < data[2].team_num; a = a + 1) {
         text("Team " + data[6].teams[a][0].name, {"text-decoration": "underline"}, null, false)
         for (var b = 0; b < data[3].player_num; b = b + 1) {
             text("Player: " + data[6].teams[a][1][b] + " | Total Score: " + data[6].teams[a][2][b], null, null, false)
+        }
+    }
+
+    text("MATCHES", {"class": "bold-underline"}, null, false)
+
+    for (var b = 0; b < data[4].match_num; b = b + 1) {
+        text("MATCH " + (b + 1), {"class": "underline"}, null, false)
+        text("Team 1: " + data[7].matches[b][0].team_1, null, null, false)
+        text("Team 2: " + data[7].matches[b][1].team_2, null, null, false)
+        for (var c = 0; c < data[5].game_num; c = c + 1) {
+            text("GAME " + (c + 1), null, null, false)
+            text("Doubles: " + data[7].matches[b][2].games[c][0].doubles, null, null, false)
+            if (data[7].matches[b][2].games[c][0].doubles == true) {
+                text("Team 1 | Players: " + data[6].teams[data[7].matches[b][0].team_1][1][data[7].matches[b][2].games[c][1].team_1[0][0]] + " and " + data[6].teams[data[7].matches[b][0].team_1][1][data[7].matches[b][2].games[c][1].team_1[0][1]] + " | Score: " + data[7].matches[b][2].games[c][1].team_1[1], null, null, false)
+                text("Team 1 | Players: " + data[6].teams[data[7].matches[b][1].team_2][1][data[7].matches[b][2].games[c][2].team_2[0][0]] + " and " + data[6].teams[data[7].matches[b][1].team_2][1][data[7].matches[b][2].games[c][2].team_2[0][1]] + " | Score: " + data[7].matches[b][2].games[c][2].team_2[1], null, null, false)
+            }
+
+            else if (data[7].matches[b][2].games[c][0].doubles == false) {
+                text("Team 1 | Player: " + data[6].teams[data[7].matches[b][0].team_1][1][data[7].matches[b][2].games[c][1].team_1[0][0]] + " | Score: " + data[7].matches[b][2].games[c][1].team_1[1], null, null, false)
+                text("Team 2 | Player: " + data[6].teams[data[7].matches[b][1].team_2][1][data[7].matches[b][2].games[c][2].team_2[0][0]] + " | Score: " + data[7].matches[b][2].games[c][1].team_2[1], null, null, false)
+            }
+
+            else {
+                throw new Error("Doubles Error")
+            }
         }
     }
 }

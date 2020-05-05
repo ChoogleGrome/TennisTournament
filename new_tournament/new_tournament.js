@@ -15,11 +15,9 @@ function main() {
 function team_setup() {
     // console.log("called") // Check
 
-    $(".button_removal").remove()
-
     data = [
         {"tournament_name": document.getElementById("tournament_name").value},
-        {"password": null},    
+        {"password": "a"},    
         {"team_num": parseInt(document.getElementById("team_num").value)},
         {"player_num": parseInt(document.getElementById("player_num").value)},
         {"match_num": parseInt(document.getElementById("match_num").value)},
@@ -45,6 +43,8 @@ function team_setup() {
             }
         }
     }
+
+    $(".button_removal").remove()
 
     data[6] = {"teams": []}
 
@@ -248,34 +248,34 @@ function match_team_input(match_num) {
     return
 } 
 
-class Game {
-    constructor(team_1, team_2) {
-        this.team_1 = team_1
-        this.team_2 = team_2
-    }
-}
+// class Game {
+//     constructor(team_1, team_2) {
+//         this.team_1 = team_1
+//         this.team_2 = team_2
+//     }
+// }
 
-class Singles extends Game {
-    constructor(team_1, team_2, doubles, player_1_team_1, player_1_team_2) {
-        super(team_1)
-        super(team_2)
-        this.doubles = doubles
-        this.player_1_team_1 = player_1_team_1
-        this.player_1_team_2 = player_1_team_2
-    }
-}
+// class Singles extends Game {
+//     constructor(team_1, team_2, doubles, player_1_team_1, player_1_team_2) {
+//         super(team_1)
+//         super(team_2)
+//         this.doubles = doubles
+//         this.player_1_team_1 = player_1_team_1
+//         this.player_1_team_2 = player_1_team_2
+//     }
+// }
 
-class Doubles extends Game {
-    constructor(team_1, team_2, doubles, player_1_team_1, player_2_team_1, player_1_team_2, player_2_team_2) {
-        super(team_1)
-        super(team_2)
-        this.doubles = doubles
-        this.player_1_team_1 = player_1_team_1
-        this.player_2_team_1 = player_2_team_1
-        this.player_1_team_2 = player_1_team_2
-        this.player_2_team_2 = player_2_team_2
-    }
-}
+// class Doubles extends Game {
+//     constructor(team_1, team_2, doubles, player_1_team_1, player_2_team_1, player_1_team_2, player_2_team_2) {
+//         super(team_1)
+//         super(team_2)
+//         this.doubles = doubles
+//         this.player_1_team_1 = player_1_team_1
+//         this.player_2_team_1 = player_2_team_1
+//         this.player_1_team_2 = player_1_team_2
+//         this.player_2_team_2 = player_2_team_2
+//     }
+// }
 
 function doubles_select (match_num, game_num) {
     if (data[7].matches[match_num] == null) {
@@ -299,6 +299,8 @@ function doubles_select (match_num, game_num) {
 function game_select(match_num, game_num, doubles) {
     $(".team_remove_match_" + match_num).remove()
 
+    console.log(game_num)
+
     var score_arr = [0, 1, 2, 3, 4, 5, 6]
     var team_opt_arr = [[], []]
     var team_val_arr = [[], []]
@@ -321,8 +323,10 @@ function game_select(match_num, game_num, doubles) {
         }
     }
 
-    console.log(team_opt_arr)
-    console.log(team_val_arr)
+    // console.log(team_opt_arr)
+    // console.log(team_val_arr)
+
+    console.log(data)
 
     data[7].matches[match_num][2].games[game_num] = []
     data[7].matches[match_num][2].games[game_num][0] = {"doubles": doubles}
@@ -342,10 +346,10 @@ function game_select(match_num, game_num, doubles) {
         dropdown("score_team_1_match_" + match_num + "_game_" + game_num, score_arr, score_arr, {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
         
         text("Player 1 of Team 2", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
-        dropdown("player_1_team_2_match_" + match_num + "_game_" + game_num, team_val_arr[0], team_opt_arr[0], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+        dropdown("player_1_team_2_match_" + match_num + "_game_" + game_num, team_val_arr[1], team_opt_arr[1], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
 
         text("Player 2 of Team 2", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
-        dropdown("player_2_team_2_match_" + match_num + "_game_" + game_num, team_val_arr[0], team_opt_arr[0], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
+        dropdown("player_2_team_2_match_" + match_num + "_game_" + game_num, team_val_arr[1], team_opt_arr[1], {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
         
         text("Score of Team 2", {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num), true)
         dropdown("score_team_2_match_" + match_num + "_game_" + game_num, score_arr, score_arr, {"class": "team_remove_match_" + match_num}, {"class": "team_remove_match_" + match_num}, document.getElementById("right_match_" + match_num))
@@ -375,31 +379,36 @@ function game_select(match_num, game_num, doubles) {
 }
 
 function game_submit(match_num, game_num, doubles) {
-    data[7].matches[match_num][2].games[1] = {"team_1": [[], parseInt(document.getElementById("score_team_1_match_" + match_num + "_game_" + game_num).value)]}
-    data[7].matches[match_num][2].games[2] = {"team_2": [[], parseInt(document.getElementById("score_team_2_match_" + match_num + "_game_" + game_num).value)]}
+    data[7].matches[match_num][2].games[game_num][1] = {"team_1": [[], parseInt(document.getElementById("score_team_1_match_" + match_num + "_game_" + game_num).value)]}
+    data[7].matches[match_num][2].games[game_num][2] = {"team_2": [[], parseInt(document.getElementById("score_team_2_match_" + match_num + "_game_" + game_num).value)]}
+
+    console.log(data)
+
 
     if (doubles == true) {
-        data[7].matches[match_num][2].games[1].team_1[0][0] = parseInt(document.getElementById("player_1_team_1_match_" + match_num + "_game_" + game_num).value)
-        data[7].matches[match_num][2].games[1].team_1[0][1] = parseInt(document.getElementById("player_2_team_1_match_" + match_num + "_game_" + game_num).value)
+        data[7].matches[match_num][2].games[game_num][1].team_1[0][0] = parseInt(document.getElementById("player_1_team_1_match_" + match_num + "_game_" + game_num).value)
+        data[7].matches[match_num][2].games[game_num][1].team_1[0][1] = parseInt(document.getElementById("player_2_team_1_match_" + match_num + "_game_" + game_num).value)
         
-        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][0]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][0]] + parseInt(data[7].matches[match_num][2].games[1].team_1[1])
-        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][1]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][1]] + parseInt(data[7].matches[match_num][2].games[1].team_1[1])
+        console.log(data)
 
-        data[7].matches[match_num][2].games[2].team_2[0][0] = parseInt(document.getElementById("player_1_team_2_match_" + match_num + "_game_" + game_num).value)
-        data[7].matches[match_num][2].games[2].team_2[0][1] = parseInt(document.getElementById("player_2_team_2_match_" + match_num + "_game_" + game_num).value)
+        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[game_num][1].team_1[0][0]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[game_num][1].team_1[0][0]] + parseInt(data[7].matches[match_num][2].games[game_num][1].team_1[1])
+        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[game_num][1].team_1[0][1]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[game_num][1].team_1[0][1]] + parseInt(data[7].matches[match_num][2].games[game_num][1].team_1[1])
 
-        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][0]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][0]] + parseInt(data[7].matches[match_num][2].games[2].team_2[1])
-        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][1]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][1]] + parseInt(data[7].matches[match_num][2].games[2].team_2[1])
+        data[7].matches[match_num][2].games[game_num][2].team_2[0][0] = parseInt(document.getElementById("player_1_team_2_match_" + match_num + "_game_" + game_num).value)
+        data[7].matches[match_num][2].games[game_num][2].team_2[0][1] = parseInt(document.getElementById("player_2_team_2_match_" + match_num + "_game_" + game_num).value)
+
+        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[game_num][2].team_2[0][0]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[game_num][2].team_2[0][0]] + parseInt(data[7].matches[match_num][2].games[game_num][2].team_2[1])
+        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[game_num][2].team_2[0][1]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[game_num][2].team_2[0][1]] + parseInt(data[7].matches[match_num][2].games[game_num][2].team_2[1])
     }
 
     else if (doubles == false) {
-        data[7].matches[match_num][2].games[1].team_1[0][0] = parseInt(document.getElementById("player_1_team_1_match_" + match_num + "_game_" + game_num).value)
+        data[7].matches[match_num][2].games[game_num][1].team_1[0][0] = parseInt(document.getElementById("player_1_team_1_match_" + match_num + "_game_" + game_num).value)
 
-        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][0]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[1].team_1[0][0]] + parseInt(data[7].matches[match_num][2].games[1].team_1[1])
+        data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[game_num][1].team_1[0][0]] = data[6].teams[data[7].matches[match_num][0].team_1][2][data[7].matches[match_num][2].games[game_num][1].team_1[0][0]] + parseInt(data[7].matches[match_num][2].games[game_num][1].team_1[1])
 
-        data[7].matches[match_num][2].games[2].team_2[0][0] = parseInt(document.getElementById("player_1_team_2_match_" + match_num + "_game_" + game_num).value)
+        data[7].matches[match_num][2].games[game_num][2].team_2[0][0] = parseInt(document.getElementById("player_1_team_2_match_" + match_num + "_game_" + game_num).value)
 
-        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][0]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[2].team_2[0][0]] + parseInt(data[7].matches[match_num][2].games[2].team_2[1])
+        data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[game_num][2].team_2[0][0]] = data[6].teams[data[7].matches[match_num][1].team_2][2][data[7].matches[match_num][2].games[game_num][2].team_2[0][0]] + parseInt(data[7].matches[match_num][2].games[game_num][2].team_2[1])
     }
 
     else {
